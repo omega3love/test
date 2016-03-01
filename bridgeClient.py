@@ -74,9 +74,18 @@ class bridgeConnection(userInterfaceWindow):
 	if not self.soc:
 	    print "Server is not opened"	
 	
+	self.Tlobby = threading.Thread(target = self.lobbyDisplay)
+	self.Tlobby.start()
+	sleep(10)
+	print "10 sec passed"
+	sleep(10)
+	print "10 sec passed"
+	print "going to disconnect"
+	self.Tlobby.join()
+	
+    def lobbyDisplay(self):
 	while (not self.startGame) and (not self.brokenError):
 	    self.lobby(self.clients)
-	self.disconnect()
 
     def makeConnection(self):
 	# make socket and connect to the server
