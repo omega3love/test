@@ -58,7 +58,7 @@ class Server(Protocol):
 	
 	self.connList = []
 	for client in self.factory.clients:
-	    connList.append(client.transport.getPeer().host)
+	    self.connList.append(client.transport.getPeer().host)
 	    
 	self.message_all("info:connList:%s"%str(self.connList))
 	
