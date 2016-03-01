@@ -119,7 +119,7 @@ class userInterfaceWindow():
     
 if __name__ == "__main__":
     client = bridgeConnection()
+    sleep(15)    
     print "end session"
-    sleep(15)
     client.disconnect()
     

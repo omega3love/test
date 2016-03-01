@@ -16,7 +16,8 @@ class Server(Protocol):
         self.factory.clients.append(self)
         self.peer = self.transport.getPeer()
         print vars(self.peer) # show who made the connection
-        self.message_all("info:connMade:%s"%self.peer.host)
+        
+        self.connectionList()
 
         if self.peer.host == myhost:
             self.factory.host = self
@@ -31,7 +32,7 @@ class Server(Protocol):
 	""" When a client lose a connection """
         print "connection lost ", self
         self.factory.clients.remove(self)
-        self.message_all("info:connLost:%s"%self.transport.getPeer().host)
+        self.connectionList()
 
     def dataReceived(self, data):
 	""" If data is delivered from a client to the server,
@@ -52,7 +53,15 @@ class Server(Protocol):
 	""" Send message to a certain client from server """
         if clients_num in range(1, len(self.factory.clients) + 1):
             self.factory.clients[clients_num].transport.write(msg + '\n')
-
+            
+    def connectionList(self):
+	
+	self.connList = []
+	for client in self.factory.clients:
+	    connList.append(client.transport.getPeer().host)
+	    
+	self.message_all("info:connList:%s"%str(self.connList))
+	
 def hostIPaddress():      
     try:
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
