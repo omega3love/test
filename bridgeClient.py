@@ -123,7 +123,7 @@ class bridgeConnection(userInterfaceWindow):
 		print "Connection is lost"
 		break
 	    
-	    if "info:connList" in data:
+	    if "info:connMade" in data:
 		self.clients = list(data.split(":")[-1])
 	    elif data=='initialize': 
 		self.dataList['cmd'].append( data ) # save the received data
