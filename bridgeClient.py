@@ -24,6 +24,7 @@ class userInterfaceWindow():
 	
     def lobby(self, clients):
 	
+	self.screen.fill(-1)
 	self.buttonList = [ self.myButton ]
 	
 	i = 1
@@ -36,8 +37,10 @@ class userInterfaceWindow():
 				    self.buttonColor, newUserName) )
 	    i += 1
 	
-	for button in buttonList:
+	for button in self.buttonList:
 	    button.draw(self.screen)
+	pygame.display.update()
+	pygame.time.Clock().tick(30)
 	    
 	    
 class bridgeConnection(userInterfaceWindow):
@@ -60,7 +63,7 @@ class bridgeConnection(userInterfaceWindow):
 	if not self.soc:
 	    print "Server is not opened"	
 	
-	while not startGame:
+	while not self.startGame:
 	    self.lobby(self.clients)
 
     def makeConnection(self):
