@@ -3,7 +3,7 @@
 import socket
 import threading
 from time import sleep
-import sys
+import sys, os
 import inputbox
 import pygame
 from bridgeSprites import Button
@@ -21,6 +21,8 @@ class userInterfaceWindow():
 	self.buttonPos = (50,50)
 	self.myButton = Button(self.buttonPos, self.buttonSize,
 				self.buttonColor, self.userName)
+	
+	self.brokenError = False
 	
     def lobby(self, clients):
 	
@@ -42,7 +44,10 @@ class userInterfaceWindow():
 	 
 	for event in pygame.event.get():
 	    if event.type == pygame.QUIT:
+		self.brokenError = True
 		pygame.quit()
+		sys.exit()
+		os._exit()
 	pygame.display.update()
 	pygame.time.Clock().tick(30)
 	    
@@ -67,7 +72,7 @@ class bridgeConnection(userInterfaceWindow):
 	if not self.soc:
 	    print "Server is not opened"	
 	
-	while not self.startGame:
+	while (not self.startGame) or (not self.brokenError):
 	    self.lobby(self.clients)
 
     def makeConnection(self):
@@ -118,7 +123,7 @@ class bridgeConnection(userInterfaceWindow):
 	""" Receive data (string type) from the server """
 	while not self.endThread:
 	    try:
-		data = self.soc.recv(self.DATA_SIZE) # receive data whose length <= DATA_SIZE
+		data = self.soc.recv(self.DATA_SIZE)# receive data whose length <= DATA_SIZE
 		print "data is : %s" %data
 	    except socket.timeout:
 		#print "socket timed out"

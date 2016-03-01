@@ -48,6 +48,7 @@ class Server(Protocol):
         sender = self.transport.getPeer().host # address of data sender
 	print "received data is : " + data
         self.message_all(data)
+        sleep(0.5)
         
         # save client to self.connList
         # and send the updated self.connList
