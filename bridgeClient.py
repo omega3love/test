@@ -41,7 +41,7 @@ class userInterfaceWindow():
 	
 	for button in self.buttonList:
 	    button.draw(self.screen)
-	 
+	
 	for event in pygame.event.get():
 	    if event.type == pygame.QUIT:
 		self.brokenError = True
@@ -57,7 +57,7 @@ class bridgeConnection(userInterfaceWindow):
 	#self.HOST = raw_input("HOST IP : ")
 	self.HOST = "143.248.2.116"
 	self.PORT = 50000
-	self.DATA_SIZE = 128 # maximum data length which can be sent in once
+	self.DATA_SIZE = 256 # maximum data length which can be sent in once
 	self.myIP = myIPaddress()
 	
 	self.endThread = False
@@ -74,18 +74,14 @@ class bridgeConnection(userInterfaceWindow):
 	if not self.soc:
 	    print "Server is not opened"	
 	
-	self.Tlobby = threading.Thread(target = self.lobbyDisplay)
-	self.Tlobby.start()
-	sleep(10)
-	print "10 sec passed"
-	sleep(10)
-	print "10 sec passed"
-	print "going to disconnect"
-	self.Tlobby.join()
-	
-    def lobbyDisplay(self):
-	while (not self.startGame) and (not self.brokenError):
-	    self.lobby(self.clients)
+	self.lobby(self.clients)
+	#print "10 sec start!"
+	#sleep(10)
+	#print "5 sec"
+	#sleep(5)
+	#print "going to be disconnected"
+	#while (not self.startGame) and (not self.brokenError):
+	    #self.lobby(self.clients)
 
     def makeConnection(self):
 	# make socket and connect to the server
@@ -169,9 +165,10 @@ class bridgeConnection(userInterfaceWindow):
 	
 	for data in self.dataHistory[:]:
 	    if "info:connList" in data:
-		self.clients = list(data.split(":")[-1])
+		self.clients = eval(data.split(":")[-1])
 		self.dataHistory.remove(data)
 		self.dataGrave.append(data)
+		self.lobby(self.clients)
 	
 
 
@@ -191,7 +188,8 @@ def myIPaddress():
 
 if __name__ == "__main__":
     client = bridgeConnection(pygame.display.set_mode((600,600)))
-    sleep(15)    
+    print "now main"
+    sleep(10)    
     print "end session"
     client.disconnect()
     
