@@ -4,32 +4,32 @@ import socket
 import threading
 from time import sleep
 import sys
-import pygame
+import inputbox
+from bridgeSprites import Button
 
-class bridgeConnection():
+class bridgeConnection(userInterfaceWindow):
     
     def __init__(self):
 		
 	self.HOST = raw_input("HOST IP : ")
-	#self.HOST = "143.248.12.11"
 	self.PORT = 50000
 	self.DATA_SIZE = 128 # maximum data length which can be sent in once
+	self.myIP = myIPaddress()
 	
 	self.endThread = False
+	self.startGame = False
+	self.clients = []
+	
 	self.makeConnection()
-        #self.dataList = []
+	
+	self.sendData("info:connMade:%s;%s"%(self.userName, self.myIP))
+	
 	self.dataList = {'cmd':[],'grid':[]} #Sort the type of the data
 	if not self.soc:
 	    print "Server is not opened"	
 	
-	""" for test """
-	#else:
-	    #while 1:
-		#msg = raw_input("send data : ")
-		#self.sendData(msg)
-		#if msg == "quit" or msg == "exit":
-		    #self.endThread = True
-		    #break
+	while not startGame:
+	    self.lobby(self.clients)
 
     def makeConnection(self):
 	# make socket and connect to the server
@@ -88,8 +88,9 @@ class bridgeConnection():
 		print "Connection is lost"
 		break
 	    
-	    if data=='initialize':
-            #if data:    
+	    if "info:connList" in data:
+		self.clients = list(data.split(":")[-1])
+	    elif data=='initialize': 
 		self.dataList['cmd'].append( data ) # save the received data
             else:
                 self.dataList['grid'].append( data)
@@ -110,13 +111,45 @@ class userInterfaceWindow():
 	
 	self.screen = screen
 	self.clients = []
+	self.userName = inputbox.ask(screen, "Type your name ")
 	
-    def a():
-	pass
+	self.buttonColor = (200,20,20)
+	self.buttonSize = (50,50,200,50)
+	self.buttonPos = (50,50)
+	self.myButton = Button(self.buttonPos, self.buttonSize,
+				self.buttonColor, self.userName)
 	
+    def lobby(self, clients):
 	
+	self.buttonList = [ self.myButton ]
 	
+	i = 1
+	for client in clients:
+	    newButtonPos = (self.buttonPos[0], self.buttonPos[1] + 50*i)
+	    newUserName = client.split(";")[0]
+	    if self.userName == newUserName:
+		continue
+	    self.buttonList.append( Button(newButtonPos, self.buttonSize, 
+				    self.buttonColor, newUserName) )
+	    i += 1
+	
+	for button in buttonList:
+	    button.draw(self.screen)
+
+
+	
+def myIPaddress():
     
+    try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(("gmail.com",80))
+	myip = s.getsockname()[0]
+	s.close()
+	return myip
+    except:
+	print "Internet disconnected?"
+	return 0
+
 if __name__ == "__main__":
     client = bridgeConnection()
     sleep(15)    
