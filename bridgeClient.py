@@ -45,9 +45,7 @@ class userInterfaceWindow():
 	for event in pygame.event.get():
 	    if event.type == pygame.QUIT:
 		self.brokenError = True
-		pygame.quit()
-		sys.exit()
-		os._exit()
+
 	pygame.display.update()
 	pygame.time.Clock().tick(30)
 	    
@@ -56,7 +54,8 @@ class bridgeConnection(userInterfaceWindow):
     
     def __init__(self, screen):
 			
-	self.HOST = raw_input("HOST IP : ")
+	#self.HOST = raw_input("HOST IP : ")
+	self.HOST = "143.248.2.116"
 	self.PORT = 50000
 	self.DATA_SIZE = 128 # maximum data length which can be sent in once
 	self.myIP = myIPaddress()
@@ -72,8 +71,10 @@ class bridgeConnection(userInterfaceWindow):
 	if not self.soc:
 	    print "Server is not opened"	
 	
-	while (not self.startGame) or (not self.brokenError):
+	while (not self.startGame) and (not self.brokenError):
 	    self.lobby(self.clients)
+	print 'hi'
+	self.disconnect()
 
     def makeConnection(self):
 	# make socket and connect to the server
