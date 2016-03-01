@@ -7,10 +7,42 @@ import sys
 import inputbox
 from bridgeSprites import Button
 
+class userInterfaceWindow():
+    
+    def __init__(self, screen):
+	
+	self.screen = screen
+	self.clients = []
+	self.userName = inputbox.ask(screen, "Type your name ")
+	
+	self.buttonColor = (200,20,20)
+	self.buttonSize = (50,50,200,50)
+	self.buttonPos = (50,50)
+	self.myButton = Button(self.buttonPos, self.buttonSize,
+				self.buttonColor, self.userName)
+	
+    def lobby(self, clients):
+	
+	self.buttonList = [ self.myButton ]
+	
+	i = 1
+	for client in clients:
+	    newButtonPos = (self.buttonPos[0], self.buttonPos[1] + 50*i)
+	    newUserName = client.split(";")[0]
+	    if self.userName == newUserName:
+		continue
+	    self.buttonList.append( Button(newButtonPos, self.buttonSize, 
+				    self.buttonColor, newUserName) )
+	    i += 1
+	
+	for button in buttonList:
+	    button.draw(self.screen)
+	    
+	    
 class bridgeConnection(userInterfaceWindow):
     
-    def __init__(self):
-		
+    def __init__(self, screen):
+			
 	self.HOST = raw_input("HOST IP : ")
 	self.PORT = 50000
 	self.DATA_SIZE = 128 # maximum data length which can be sent in once
@@ -18,10 +50,9 @@ class bridgeConnection(userInterfaceWindow):
 	
 	self.endThread = False
 	self.startGame = False
-	self.clients = []
 	
 	self.makeConnection()
-	
+	userInterfaceWindow.__init__(self, screen)
 	self.sendData("info:connMade:%s;%s"%(self.userName, self.myIP))
 	
 	self.dataList = {'cmd':[],'grid':[]} #Sort the type of the data
@@ -105,36 +136,7 @@ class bridgeConnection(userInterfaceWindow):
 	pygame.quit()
 	sys.exit()
 	
-class userInterfaceWindow():
-    
-    def __init__(self, screen):
-	
-	self.screen = screen
-	self.clients = []
-	self.userName = inputbox.ask(screen, "Type your name ")
-	
-	self.buttonColor = (200,20,20)
-	self.buttonSize = (50,50,200,50)
-	self.buttonPos = (50,50)
-	self.myButton = Button(self.buttonPos, self.buttonSize,
-				self.buttonColor, self.userName)
-	
-    def lobby(self, clients):
-	
-	self.buttonList = [ self.myButton ]
-	
-	i = 1
-	for client in clients:
-	    newButtonPos = (self.buttonPos[0], self.buttonPos[1] + 50*i)
-	    newUserName = client.split(";")[0]
-	    if self.userName == newUserName:
-		continue
-	    self.buttonList.append( Button(newButtonPos, self.buttonSize, 
-				    self.buttonColor, newUserName) )
-	    i += 1
-	
-	for button in buttonList:
-	    button.draw(self.screen)
+
 
 
 	
