@@ -13,6 +13,7 @@ class Server(Protocol):
     def connectionMade(self):
 	
         # self.transport.write("""connected""")
+        self.connList = []
         self.factory.clients.append(self)
         self.peer = self.transport.getPeer()
         print vars(self.peer) # show who made the connection
@@ -29,7 +30,7 @@ class Server(Protocol):
     def connectionLost(self, reason):
 	""" When a client lose a connection """
         print "connection lost ", self
-        for client in connList:
+        for client in self.connList:
 	    if client.split(";")[1] == self.transport.getPeer().host:
 		self.factory.clients.remove(self)
 		break

@@ -5,6 +5,7 @@ import threading
 from time import sleep
 import sys
 import inputbox
+import pygame
 from bridgeSprites import Button
 
 class userInterfaceWindow():
