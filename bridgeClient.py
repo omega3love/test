@@ -153,7 +153,7 @@ def myIPaddress():
 	return 0
 
 if __name__ == "__main__":
-    client = bridgeConnection()
+    client = bridgeConnection(pygame.display.set_mode((600,600)))
     sleep(15)    
     print "end session"
     client.disconnect()
