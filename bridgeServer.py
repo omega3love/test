@@ -54,8 +54,11 @@ class Server(Protocol):
         if "info:connMade:" in data:
 	    splited = data.split(":")[-1].split(";") # [ userName, IP ]
 	    for client in self.factory.clients:
-		self.connList.append("%s;%s" %(splited[0],splited[1]))
-		self.message_all("info:connList:%s" %str(self.connList))
+		newConn = "%s;%s" %(splited[0],splited[1])
+		if newConn not in self.connList[:]:
+		    self.connList.append(newConn)
+		    self.message_all("info:connList:%s" %str(self.connList))
+		    break
 
     def message_all(self, msg):
 	""" Send message to all clients from server """

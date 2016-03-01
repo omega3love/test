@@ -47,7 +47,7 @@ class userInterfaceWindow():
 		self.brokenError = True
 
 	pygame.display.update()
-	pygame.time.Clock().tick(30)
+	#pygame.time.Clock().tick(30)
 	    
 	    
 class bridgeConnection(userInterfaceWindow):
@@ -127,9 +127,10 @@ class bridgeConnection(userInterfaceWindow):
 	while not self.endThread:
 	    try:
 		data = self.soc.recv(self.DATA_SIZE)# receive data whose length <= DATA_SIZE
+		print "raw data is : %s" %data
 		for realData in data.split("^")[:-1]:
 		    self.dataHistory.append(realData)
-		print "data is : %s" %data
+		    print "data is : %s" %realData
 	    except socket.timeout:
 		#print "socket timed out"
 		continue
