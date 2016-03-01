@@ -12,9 +12,9 @@ class Server(Protocol):
 
     def connectionMade(self):
 	
-        # self.transport.write("""connected""")
         self.connList = []
         self.factory.clients.append(self)
+        
         self.peer = self.transport.getPeer()
         print vars(self.peer) # show who made the connection
 
@@ -30,25 +30,32 @@ class Server(Protocol):
     def connectionLost(self, reason):
 	""" When a client lose a connection """
         print "connection lost ", self
-        for client in self.connList:
-	    if client.split(";")[1] == self.transport.getPeer().host:
-		self.factory.clients.remove(self)
+        
+        # Erase lost client from self.connList
+        # and send the updated self.connList
+        for conn in self.connList[:]:
+	    if conn.split(";")[1] == self.transport.getPeer().host:
+		self.connList.remove(conn)
+		self.message_all("info:connList:%s" %str(self.connList))
 		break
- 
+	
+	# Erase lost client from self.factory.clients
+	self.factory.clients.remove(self)
 
     def dataReceived(self, data):
 	""" If data is delivered from a client to the server,
 	    deliver the data to other clients """
         sender = self.transport.getPeer().host # address of data sender
-	print data
+	print "received data is : " + data
         self.message_all(data)
+        
+        # save client to self.connList
+        # and send the updated self.connList
         if "info:connMade:" in data:
 	    splited = data.split(":")[-1].split(";") # [ userName, IP ]
 	    for client in self.factory.clients:
 		self.connList.append("%s;%s" %(splited[0],splited[1]))
-        #for clients in self.factory.clients:
-            #if not clients.peer.host == sender:
-		#clients.transport.write(data)
+		self.message_all("info:connList:%s" %str(self.connList))
 
     def message_all(self, msg):
 	""" Send message to all clients from server """

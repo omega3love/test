@@ -39,6 +39,10 @@ class userInterfaceWindow():
 	
 	for button in self.buttonList:
 	    button.draw(self.screen)
+	 
+	for event in pygame.event.get():
+	    if event.type == pygame.QUIT:
+		pygame.quit()
 	pygame.display.update()
 	pygame.time.Clock().tick(30)
 	    
@@ -123,7 +127,7 @@ class bridgeConnection(userInterfaceWindow):
 		print "Connection is lost"
 		break
 	    
-	    if "info:connMade" in data:
+	    if "info:connList" in data:
 		self.clients = list(data.split(":")[-1])
 	    elif data=='initialize': 
 		self.dataList['cmd'].append( data ) # save the received data
