@@ -67,13 +67,15 @@ class bridgeConnection(userInterfaceWindow):
 	userInterfaceWindow.__init__(self, screen)
 	self.sendData("info:connMade:%s;%s"%(self.userName, self.myIP))
 	
+	self.dataHistory = [] # all data must be saved here at first
+	self.dataGrave = [] # processed data will be saved here
 	self.dataList = {'cmd':[],'grid':[]} #Sort the type of the data
+	
 	if not self.soc:
 	    print "Server is not opened"	
 	
 	while (not self.startGame) and (not self.brokenError):
 	    self.lobby(self.clients)
-	print 'hi'
 	self.disconnect()
 
     def makeConnection(self):
@@ -125,6 +127,8 @@ class bridgeConnection(userInterfaceWindow):
 	while not self.endThread:
 	    try:
 		data = self.soc.recv(self.DATA_SIZE)# receive data whose length <= DATA_SIZE
+		for realData in data.split("^")[:-1]:
+		    self.dataHistory.append(realData)
 		print "data is : %s" %data
 	    except socket.timeout:
 		#print "socket timed out"
@@ -133,12 +137,13 @@ class bridgeConnection(userInterfaceWindow):
 		print "Connection is lost"
 		break
 	    
-	    if "info:connList" in data:
-		self.clients = list(data.split(":")[-1])
-	    elif data=='initialize': 
-		self.dataList['cmd'].append( data ) # save the received data
-            else:
-                self.dataList['grid'].append( data)
+	    self.dataProcessing()
+	    #if "info:connList" in data:
+		#self.clients = list(data.split(":")[-1])
+	    #elif data=='initialize': 
+		#self.dataList['cmd'].append( data ) # save the received data
+            #else:
+                #self.dataList['grid'].append( data)
 	self.soc.close() # disconnect the connection
     
     def disconnect(self):
@@ -149,6 +154,14 @@ class bridgeConnection(userInterfaceWindow):
 	print "thread is joined"
 	pygame.quit()
 	sys.exit()
+	
+    def dataProcessing(self):
+	
+	for data in self.dataHistory[:]:
+	    if "info:connList" in data:
+		self.clients = list(data.split(":")[-1])
+		self.dataHistory.remove(data)
+		self.dataGrave.append(data)
 	
 
 

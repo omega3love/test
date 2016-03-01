@@ -48,7 +48,6 @@ class Server(Protocol):
         sender = self.transport.getPeer().host # address of data sender
 	print "received data is : " + data
         self.message_all(data)
-        sleep(0.5)
         
         # save client to self.connList
         # and send the updated self.connList
@@ -61,7 +60,7 @@ class Server(Protocol):
     def message_all(self, msg):
 	""" Send message to all clients from server """
         for clients in self.factory.clients:
-            clients.transport.write(msg)
+            clients.transport.write(msg+"^")
 
     def message_to(self, clients_num, msg):
 	""" Send message to a certain client from server """
