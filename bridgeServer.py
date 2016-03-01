@@ -59,7 +59,8 @@ class Server(Protocol):
 		    self.connList.append(newConn)
 		    self.message_all("info:connList:%s" %str(self.connList))
 		    break
-
+	print self.connList
+	
     def message_all(self, msg):
 	""" Send message to all clients from server """
         for clients in self.factory.clients:

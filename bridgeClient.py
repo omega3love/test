@@ -14,39 +14,40 @@ class userInterfaceWindow():
 	
 	self.screen = screen
 	self.clients = []
-	self.userName = inputbox.ask(screen, "Type your name ")
+	#self.userName = inputbox.ask(screen, "Type your name ")
+	self.userName = "omega"
 	
 	self.buttonColor = (200,20,20)
 	self.buttonSize = (50,50,200,50)
 	self.buttonPos = (50,50)
-	self.myButton = Button(self.buttonPos, self.buttonSize,
-				self.buttonColor, self.userName)
+	#self.myButton = Button(self.buttonPos, self.buttonSize,
+				#self.buttonColor, self.userName)
 	
 	self.brokenError = False
 	
     def lobby(self, clients):
 	
 	self.screen.fill(-1)
-	self.buttonList = [ self.myButton ]
+	#self.buttonList = [ self.myButton ]
 	
 	i = 1
 	for client in clients:
-	    newButtonPos = (self.buttonPos[0], self.buttonPos[1] + 50*i)
+	    newButtonPos = (self.buttonPos[0], self.buttonPos[1] + 70*i)
 	    newUserName = client.split(";")[0]
 	    if self.userName == newUserName:
 		continue
-	    self.buttonList.append( Button(newButtonPos, self.buttonSize, 
-				    self.buttonColor, newUserName) )
+	    #self.buttonList.append( Button(newButtonPos, self.buttonSize, 
+				    #self.buttonColor, newUserName) )
 	    i += 1
 	
-	for button in self.buttonList:
-	    button.draw(self.screen)
+	#for button in self.buttonList:
+	    #button.draw(self.screen)
 	
-	for event in pygame.event.get():
-	    if event.type == pygame.QUIT:
-		self.brokenError = True
+	#for event in pygame.event.get():
+	    #if event.type == pygame.QUIT:
+		#self.brokenError = True
 
-	pygame.display.update()
+	#pygame.display.update()
 	#pygame.time.Clock().tick(30)
 	    
 	    
@@ -187,7 +188,8 @@ def myIPaddress():
 	return 0
 
 if __name__ == "__main__":
-    client = bridgeConnection(pygame.display.set_mode((600,600)))
+    #client = bridgeConnection(pygame.display.set_mode((600,600)))
+    client = bridgeConnection(pygame.Surface((600,600)))
     print "now main"
     sleep(10)    
     print "end session"
