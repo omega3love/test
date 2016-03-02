@@ -7,13 +7,10 @@ from time import sleep
 import pygame
 
 myhost = '127.0.0.1'
+connList = []
 
 class Server(Protocol):
     
-    def __init__(self):
-	
-	self.connList = []
-	
     def connectionMade(self):
 	
         self.factory.clients.append(self)
@@ -34,12 +31,12 @@ class Server(Protocol):
 	""" When a client lose a connection """
         print "connection lost ", self
         
-        # Erase lost client from self.connList
-        # and send the updated self.connList
-        for conn in self.connList[:]:
+        # Erase lost client from connList
+        # and send the updated connList
+        for conn in connList[:]:
 	    if conn.split(";")[1] == self.transport.getPeer().host:
-		self.connList.remove(conn)
-		self.message_all("info:connList:%s" %str(self.connList))
+		connList.remove(conn)
+		self.message_all("info:connList:%s" %str(connList))
 		break
 	
 	# Erase lost client from self.factory.clients
@@ -52,17 +49,17 @@ class Server(Protocol):
 	print "received data is : " + data
         self.message_all(data)
         
-        # save client to self.connList
-        # and send the updated self.connList
+        # save client to connList
+        # and send the updated connList
         if "info:connMade:" in data:
 	    splited = data.split(":")[-1].split(";") # [ userName, IP ]
 	    for client in self.factory.clients:
 		newConn = "%s;%s" %(splited[0],splited[1])
-		if newConn not in self.connList[:]:
-		    self.connList.append(newConn)
-		    self.message_all("info:connList:%s" %str(self.connList))
+		if newConn not in connList[:]:
+		    connList.append(newConn)
+		    self.message_all("info:connList:%s" %str(connList))
 		    break
-	print self.connList
+	print connList
 	
     def message_all(self, msg):
 	""" Send message to all clients from server """
@@ -76,11 +73,11 @@ class Server(Protocol):
             
     #def connectionList(self):
 	
-	#self.connList = []
+	#connList = []
 	#for client in self.factory.clients:
-	    #self.connList.append(client.transport.getPeer().host)
+	    #connList.append(client.transport.getPeer().host)
 	    
-	#self.message_all("info:connList:%s"%str(self.connList))
+	#self.message_all("info:connList:%s"%str(connList))
 	
 def hostIPaddress():      
     try:
