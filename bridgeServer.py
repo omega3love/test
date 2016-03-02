@@ -9,10 +9,13 @@ import pygame
 myhost = '127.0.0.1'
 
 class Server(Protocol):
-
+    
+    def __init__(self):
+	
+	self.connList = []
+	
     def connectionMade(self):
 	
-        self.connList = []
         self.factory.clients.append(self)
         
         self.peer = self.transport.getPeer()
