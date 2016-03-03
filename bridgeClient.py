@@ -73,8 +73,12 @@ class bridgeConnection(userInterfaceWindow):
 	
 	if not self.soc:
 	    print "Server is not opened"	
-	
-	self.lobby(self.clients)
+
+	print "waiting an event..."
+	while True:
+	    ev = pygame.event.wait()
+	    if ev.type == pygame.MOUSEBUTTONUP or ev.type == pygame.QUIT:
+		break
 	#print "10 sec start!"
 	#sleep(10)
 	#print "5 sec"
@@ -190,7 +194,7 @@ if __name__ == "__main__":
     client = bridgeConnection(pygame.display.set_mode((600,600)))
     #client = bridgeConnection(pygame.Surface((600,600)))
     print "now main"
-    sleep(10)    
+    sleep(5)    
     print "end session"
     client.disconnect()
     
