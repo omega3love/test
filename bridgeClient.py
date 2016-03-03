@@ -76,6 +76,7 @@ class bridgeConnection(userInterfaceWindow):
 
 	print "waiting an event..."
 	
+	mouseDownPos, mouseUpPos = None, None
 	buttonDowned = None
 	while True:
 	    pygame.event.clear()
@@ -93,15 +94,16 @@ class bridgeConnection(userInterfaceWindow):
 	    for button in self.buttonList:
 		xBdry = (button.pos[0], button.pos[0] + button.rect[2])
 		yBdry = (button.pos[1], button.pos[1] + button.rect[3])
-		isInBdry = (xBdry[0] <= mouseDownPos[0] < xBdry[1]) and (yBdry[0] <= mouseDownPos[1] < yBdry[1])
+		if mouseDownPos:
+		    isInBdry = (xBdry[0] <= mouseDownPos[0] < xBdry[1]) and (yBdry[0] <= mouseDownPos[1] < yBdry[1])
 		
-		if isMousePressed:
-		    if mouseDownPos and not buttonDowned and isInBdry:
-			buttonDowned = button
-		    elif buttonDowned and not isInBdry:
+		    if isMousePressed:
+			if mouseDownPos and not buttonDowned and isInBdry:
+			    buttonDowned = button
+			elif buttonDowned and not isInBdry:
+			    buttonDowned = None
+		    else:
 			buttonDowned = None
-		else:
-		    buttonDowned = None
 		    
 		
 		    
