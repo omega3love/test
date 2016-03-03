@@ -63,8 +63,8 @@ class bridgeConnection(userInterfaceWindow):
 	self.endThread = False
 	self.startGame = False
 	
-	self.makeConnection()
 	userInterfaceWindow.__init__(self, screen)
+	self.makeConnection()
 	self.sendData("info:connMade:%s;%s"%(self.userName, self.myIP))
 	
 	self.dataHistory = [] # all data must be saved here at first
@@ -75,18 +75,41 @@ class bridgeConnection(userInterfaceWindow):
 	    print "Server is not opened"	
 
 	print "waiting an event..."
+	
+	buttonDowned = None
 	while True:
+	    pygame.event.clear()
 	    ev = pygame.event.wait()
-	    if ev.type == pygame.MOUSEBUTTONUP or ev.type == pygame.QUIT:
+	    #print pygame.event.event_name(ev.type)
+	    if ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE or ev.type == pygame.QUIT:
 		break
-	    
-	    mousePos = pygame.mouse.get_pos()
+	    elif ev.type == pygame.MOUSEBUTTONDOWN:
+		mouseDownPos = pygame.mouse.get_pos()
+	    elif ev.type == pygame.MOUSEBUTTONUP:
+		mouseUpPos = pygame.mouse.get_pos()
+		
+	    isMousePressed = pygame.mouse.get_pressed()[0]
+	    #mousePos = pygame.mouse.get_pos()
 	    for button in self.buttonList:
 		xBdry = (button.pos[0], button.pos[0] + button.rect[2])
 		yBdry = (button.pos[1], button.pos[1] + button.rect[3])
-		if xBdry[0] <= mousePos[0] < xBdry[1] and yBdry[0] <= mousePos[1] < yBdry[1]:
-		    print button.text
-		    sleep(0.5)
+		isInBdry = (xBdry[0] <= mouseDownPos[0] < xBdry[1]) and (yBdry[0] <= mouseDownPos[1] < yBdry[1])
+		
+		if isMousePressed:
+		    if mouseDownPos and not buttonDowned and isInBdry:
+			buttonDowned = button
+		    elif buttonDowned and not isInBdry:
+			buttonDowned = None
+		else:
+		    buttonDowned = None
+		    
+		
+		    
+		#if xBdry[0] <= mousePos[0] < xBdry[1] and yBdry[0] <= mousePos[1] < yBdry[1]:
+		    #print button.text
+		    #sleep(0.5)
+		#if xBdry[0] <= mouseDownPos[0] < xBdry[1] and yBdry[0] <= mouseDownPos[1] < yBdry[1]:
+		    #button.
 	#print "10 sec start!"
 	#sleep(10)
 	#print "5 sec"
@@ -97,15 +120,15 @@ class bridgeConnection(userInterfaceWindow):
 
     def makeConnection(self):
 	# make socket and connect to the server
-	soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	soc.settimeout(5.0) # maximum wating time (seconds)
+	self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	self.soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	self.soc.settimeout(5.0) # maximum wating time (seconds)
 	    
 	connected = False
 	while not connected:
 	    try:
 		print "trying to connect " + self.HOST
-		soc.connect( (self.HOST, self.PORT) )
+		self.soc.connect( (self.HOST, self.PORT) )
 		connected = True
 		print "Connected!"
 		#soc.settimeout(None)
@@ -126,7 +149,6 @@ class bridgeConnection(userInterfaceWindow):
 		self.soc = False
 		return
 	
-	self.soc = soc
 	# Threading allows to get data whenever it's delievered
 	self.T = threading.Thread(target = self.receiveData)
 	self.T.start()	
@@ -202,7 +224,7 @@ if __name__ == "__main__":
     client = bridgeConnection(pygame.display.set_mode((600,600)))
     #client = bridgeConnection(pygame.Surface((600,600)))
     print "now main"
-    sleep(5)    
+    sleep(3)    
     print "end session"
     client.disconnect()
     
