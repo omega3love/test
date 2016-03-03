@@ -47,13 +47,14 @@ class Button(pygame.sprite.Sprite):
     
     def __init__(self, pos, rect, color, text = None):
 	pygame.sprite.Sprite.__init__(self)
-	self.pos = pos
-	self.rect = pygame.Rect(rect)
+	self.pos = pos # left-top
+	self.rect = pygame.Rect(rect) # (left, top, width, height)
 	self.color = pygame.Color(*color)
 	self.text = text
+	self.renderedText = None
 	
 	if self.text:
-	    self.text = self.renderText(self.text)
+	    self.renderedText = self.renderText(self.text)
 		
 	self.image = self.roundedRect()
 	
@@ -91,11 +92,11 @@ class Button(pygame.sprite.Sprite):
 	rectangle.fill((255,255,255,alpha),special_flags=pygame.BLEND_RGBA_MIN)
 	
 	
-	if self.text:
-	    textrect = self.text.get_rect()
+	if self.renderedText:
+	    textrect = self.renderedText.get_rect()
 	    x = rectpos.centerx - textrect.centerx
 	    y = rectpos.centery - textrect.centery
-	    rectangle.blit(self.text,(x,y))
+	    rectangle.blit(self.renderedText,(x,y))
 	return rectangle   
 
     def draw(self, screen):

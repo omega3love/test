@@ -79,6 +79,14 @@ class bridgeConnection(userInterfaceWindow):
 	    ev = pygame.event.wait()
 	    if ev.type == pygame.MOUSEBUTTONUP or ev.type == pygame.QUIT:
 		break
+	    
+	    mousePos = pygame.mouse.get_pos()
+	    for button in self.buttonList:
+		xBdry = (button.pos[0], button.pos[0] + button.rect[2])
+		yBdry = (button.pos[1], button.pos[1] + button.rect[3])
+		if xBdry[0] <= mousePos[0] < xBdry[1] and yBdry[0] <= mousePos[1] < yBdry[1]:
+		    print button.text
+		    sleep(0.5)
 	#print "10 sec start!"
 	#sleep(10)
 	#print "5 sec"
