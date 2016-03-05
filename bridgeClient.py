@@ -212,8 +212,6 @@ class bridgeConnection(userInterfaceWindow):
 	for data in self.dataHistory[:]:
 	    if "info:connList" in data:
 		self.clients = eval(data.split(":")[-1])
-		self.dataHistory.remove(data)
-		self.dataGrave.append(data)
 		self.lobby(self.clients)
 	    elif "info:askPlay" in data:
 		self.opponent = data.split(":")[-1].split(";")[0]
@@ -224,6 +222,10 @@ class bridgeConnection(userInterfaceWindow):
 		    self.opponent = None
 		    self.waitingForAns = False
 		    self.switch = True
+	    self.dataHistory.remove(data)
+	    self.dataGrave.append(data)    
+		    
+		    
 		
     def selfConnectedSend(self):
 	

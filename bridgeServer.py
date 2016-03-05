@@ -78,7 +78,7 @@ class Server(Protocol):
         #if clients_num in range(1, len(self.factory.clients) + 1):
             #self.factory.clients[clients_num].transport.write(msg + '\n')
         
-        for client in self.connList:
+        for client in connList:
 	    spl = client.split(";")
 	    if spl[0] == receiver:
 		for fclient in self.factory.clients:
