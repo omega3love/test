@@ -12,7 +12,7 @@
 #
 # Only near the center of the screen is blitted to
 
-import pygame, pygame.font, pygame.event, pygame.draw, string
+import pygame, pygame.font, pygame.event, pygame.draw, string, pygame.time
 from pygame.locals import *
 
 def get_key():
@@ -58,6 +58,28 @@ def ask(screen, question):
     display_box(screen, question + ": " + string.join(current_string,""))
   return string.join(current_string,"")
 
+def display_box_custum(screen, pos, message):
+  
+  fontobject = pygame.font.Font(None,15)
+
+  pygame.draw.rect(screen, (70,70,70),
+                   (pos[0], pos[1], 250, 40), 0)
+  pygame.draw.rect(screen, (55,55,55),
+                   (pos[0]-2, pos[1]-2, 254, 44), 1)
+  if len(message) != 0:
+    screen.blit(fontobject.render(message, 1, (255,255,255)),
+                (pos[0]+5, pos[1]+10))
+  pygame.display.flip()
+  
+def display_msg_custum(screen, pos, message):
+  
+  fontobject = pygame.font.Font(None,27)
+
+  if len(message) != 0:
+    screen.blit(fontobject.render(message, 1, (0,0,0)),
+                (pos[0], pos[1]+13))
+  pygame.display.flip()
+  
 def main():
   screen = pygame.display.set_mode((320,240))
   print ask(screen, "Name") + " was entered"

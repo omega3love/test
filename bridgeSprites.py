@@ -48,7 +48,7 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, pos, rect, color, text = None):
 	pygame.sprite.Sprite.__init__(self)
 	self.pos = pos # left-top
-	self.rect = pygame.Rect(rect) # (left, top, width, height)
+	self.rect = pygame.Rect((0,0,rect[0],rect[1])) # (left, top, width, height)
 	self.color = pygame.Color(*color)
 	self.text = text
 	self.renderedText = None

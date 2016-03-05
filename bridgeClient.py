@@ -17,7 +17,7 @@ class userInterfaceWindow():
 	self.userName = inputbox.ask(screen, "Type your name ")
 	
 	self.buttonColor = (200,20,20)
-	self.buttonSize = (50,50,200,50)
+	self.buttonSize = (200,50)
 	self.buttonPos = (50,50)
 	self.myButton = Button(self.buttonPos, self.buttonSize,
 				self.buttonColor, self.userName)
@@ -49,7 +49,54 @@ class userInterfaceWindow():
 	pygame.display.update()
 	#pygame.time.Clock().tick(30)
 	    
-	    
+    def askToPlay(self):
+	
+	mouseDownPos, mouseUpPos = None, None
+	buttonDowned = None
+	self.waitingForAns = False
+	self.switch = True
+	
+	while True:
+	    pygame.event.clear()
+	    ev = pygame.event.wait()
+	    #print pygame.event.event_name(ev.type)
+	    mouseDownPos = None
+	    mouseUpPos = None
+	    if ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE or ev.type == pygame.QUIT:
+		break
+	    elif ev.type == pygame.MOUSEBUTTONDOWN:
+		mouseDownPos = pygame.mouse.get_pos()
+	    elif ev.type == pygame.MOUSEBUTTONUP:
+		mouseUpPos = pygame.mouse.get_pos()
+		
+	    if not self.waitingForAns:
+		isMousePressed = pygame.mouse.get_pressed()[0]
+		for button in self.buttonList:
+		    xBdry = (button.pos[0], button.pos[0] + button.rect[2])
+		    yBdry = (button.pos[1], button.pos[1] + button.rect[3])
+		    if mouseDownPos:
+			isInBdry = (xBdry[0] <= mouseDownPos[0] < xBdry[1]) and (yBdry[0] <= mouseDownPos[1] < yBdry[1])
+
+			if isMousePressed:
+			    if not buttonDowned and isInBdry:
+				buttonDowned = button
+			    elif buttonDowned == button and not isInBdry:
+				buttonDowned = None
+			else:
+			    buttonDowned = None
+		    if mouseUpPos:
+			isInBdry = (xBdry[0] <= mouseUpPos[0] < xBdry[1]) and (yBdry[0] <= mouseUpPos[1] < yBdry[1])
+			
+			if buttonDowned == button and isInBdry:
+			    print "Clicked button : " + button.text
+			    display_pos = ( button.pos[0]+button.rect[2]+20, button.pos[1] )
+			    inputbox.display_msg_custum(self.screen, display_pos, "Asked '%s' to play. Hang on a sec..." %button.text)
+			    buttonDowned = None
+			    self.waitingForAns = button.text
+	    #else:
+		
+		
+		
 class bridgeConnection(userInterfaceWindow):
     
     def __init__(self, screen):
@@ -76,53 +123,7 @@ class bridgeConnection(userInterfaceWindow):
 
 	print "waiting an event..."
 	
-	mouseDownPos, mouseUpPos = None, None
-	buttonDowned = None
-	while True:
-	    pygame.event.clear()
-	    ev = pygame.event.wait()
-	    #print pygame.event.event_name(ev.type)
-	    if ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE or ev.type == pygame.QUIT:
-		break
-	    elif ev.type == pygame.MOUSEBUTTONDOWN:
-		mouseDownPos = pygame.mouse.get_pos()
-		mouseUpPos = None
-	    elif ev.type == pygame.MOUSEBUTTONUP:
-		mouseUpPos = pygame.mouse.get_pos()
-		mouseDownPos = None
-		
-	    isMousePressed = pygame.mouse.get_pressed()[0]
-	    #mousePos = pygame.mouse.get_pos()
-	    for button in self.buttonList:
-		xBdry = (button.pos[0], button.pos[0] + button.rect[2])
-		yBdry = (button.pos[1], button.pos[1] + button.rect[3])
-		if mouseDownPos:
-		    isInBdry = (xBdry[0] <= mouseDownPos[0] < xBdry[1]) and (yBdry[0] <= mouseDownPos[1] < yBdry[1])
-		
-		    if isMousePressed:
-			if not buttonDowned and isInBdry:
-			    buttonDowned = button
-			else:
-			    buttonDowned = None
-		    else:
-			buttonDowned = None
-		if mouseUpPos:
-		    isInBdry = (xBdry[0] <= mouseUpPos[0] < xBdry[1]) and (yBdry[0] <= mouseUpPos[1] < yBdry[1])
-		
-		    if buttonDowned == button and isInBdry:
-			print button.text
-		#if xBdry[0] <= mousePos[0] < xBdry[1] and yBdry[0] <= mousePos[1] < yBdry[1]:
-		    #print button.text
-		    #sleep(0.5)
-		#if xBdry[0] <= mouseDownPos[0] < xBdry[1] and yBdry[0] <= mouseDownPos[1] < yBdry[1]:
-		    #button.
-	#print "10 sec start!"
-	#sleep(10)
-	#print "5 sec"
-	#sleep(5)
-	#print "going to be disconnected"
-	#while (not self.startGame) and (not self.brokenError):
-	    #self.lobby(self.clients)
+	self.askToPlay()
 
     def makeConnection(self):
 	# make socket and connect to the server
@@ -157,7 +158,9 @@ class bridgeConnection(userInterfaceWindow):
 	
 	# Threading allows to get data whenever it's delievered
 	self.T = threading.Thread(target = self.receiveData)
-	self.T.start()	
+	self.T.start()
+	self.T2 = threading.Thread(target = self.selfConnectedSend)
+	self.T2.start()
 
     def sendData(self, data):
 	""" Send data (string type) to the server """
@@ -197,23 +200,44 @@ class bridgeConnection(userInterfaceWindow):
 	self.endThread = True
 	print "joining the thread..."
 	self.T.join()
+	self.T2.join()
 	print "thread is joined"
 	pygame.quit()
 	sys.exit()
 	
     def dataProcessing(self):
 	
+	# for reading
 	for data in self.dataHistory[:]:
 	    if "info:connList" in data:
 		self.clients = eval(data.split(":")[-1])
 		self.dataHistory.remove(data)
 		self.dataGrave.append(data)
 		self.lobby(self.clients)
+	    elif "info:askPlay" in data:
+		self.opponent = data.split(":")[-1].split[";"][0]
+		answer = inputbox.ask(self.screen, "'%s' has asked you to play. Accept?(y/n) ")
+		if answer in ["Y", "Yes", "y", "yes"]:
+		    self.sendData("info:gameAccept:%s;%s" %(self.userName, self.opponent))
+		else:
+		    self.opponent = None
+		    self.waitingForAns = False
+		    self.switch = True
+		
+    def selfConnectedSend(self):
 	
+	# for sending
+	# if self.# is changed, send data.
+	while not self.endThread:
+	    try:
+		if self.waitingForAns and self.switch:
+		    self.sendData("info:askPlay:%s;%s" %(self.userName, self.waitingForAns))
+		    self.switch = False
+	    except:
+		pass
+		
+	self.soc.close()
 
-
-
-	
 def myIPaddress():
     
     try:
