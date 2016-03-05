@@ -86,8 +86,10 @@ class bridgeConnection(userInterfaceWindow):
 		break
 	    elif ev.type == pygame.MOUSEBUTTONDOWN:
 		mouseDownPos = pygame.mouse.get_pos()
+		mouseUpPos = None
 	    elif ev.type == pygame.MOUSEBUTTONUP:
 		mouseUpPos = pygame.mouse.get_pos()
+		mouseDownPos = None
 		
 	    isMousePressed = pygame.mouse.get_pressed()[0]
 	    #mousePos = pygame.mouse.get_pos()
@@ -98,15 +100,17 @@ class bridgeConnection(userInterfaceWindow):
 		    isInBdry = (xBdry[0] <= mouseDownPos[0] < xBdry[1]) and (yBdry[0] <= mouseDownPos[1] < yBdry[1])
 		
 		    if isMousePressed:
-			if mouseDownPos and not buttonDowned and isInBdry:
+			if not buttonDowned and isInBdry:
 			    buttonDowned = button
-			elif buttonDowned and not isInBdry:
+			else:
 			    buttonDowned = None
 		    else:
 			buttonDowned = None
-		    
+		if mouseUpPos:
+		    isInBdry = (xBdry[0] <= mouseUpPos[0] < xBdry[1]) and (yBdry[0] <= mouseUpPos[1] < yBdry[1])
 		
-		    
+		    if buttonDowned == button and isInBdry:
+			print button.text
 		#if xBdry[0] <= mousePos[0] < xBdry[1] and yBdry[0] <= mousePos[1] < yBdry[1]:
 		    #print button.text
 		    #sleep(0.5)
