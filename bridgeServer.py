@@ -47,29 +47,45 @@ class Server(Protocol):
 	    deliver the data to other clients """
         sender = self.transport.getPeer().host # address of data sender
 	print "received data is : " + data
-        self.message_all(data)
-        
-        # save client to connList
-        # and send the updated connList
-        if "info:connMade:" in data:
-	    splited = data.split(":")[-1].split(";") # [ userName, IP ]
-	    for client in self.factory.clients:
-		newConn = "%s;%s" %(splited[0],splited[1])
-		if newConn not in connList[:]:
-		    connList.append(newConn)
-		    self.message_all("info:connList:%s" %str(connList))
-		    break
-	print connList
+	
+	if "info:askPlay" in data:
+	    spl = data.split(":")[-1].split(";")
+	    PlayerAsking = spl[0]
+	    PlayerAsked = spl[1]
+	    self.message_to(spl[1],data)
+	else:
+	    self.message_all(data)
+	    
+	    # save client to connList
+	    # and send the updated connList
+	    if "info:connMade" in data:
+		splited = data.split(":")[-1].split(";") # [ userName, IP ]
+		for client in self.factory.clients:
+		    newConn = "%s;%s" %(splited[0],splited[1])
+		    if newConn not in connList[:]:
+			connList.append(newConn)
+			self.message_all("info:connList:%s" %str(connList))
+			break
+	    print connList
 	
     def message_all(self, msg):
 	""" Send message to all clients from server """
         for clients in self.factory.clients:
             clients.transport.write(msg+"^")
 
-    def message_to(self, clients_num, msg):
+    def message_to(self, receiver, msg):
 	""" Send message to a certain client from server """
-        if clients_num in range(1, len(self.factory.clients) + 1):
-            self.factory.clients[clients_num].transport.write(msg + '\n')
+        #if clients_num in range(1, len(self.factory.clients) + 1):
+            #self.factory.clients[clients_num].transport.write(msg + '\n')
+        
+        for client in self.connList:
+	    spl = client.split(";")
+	    if spl[0] == receiver:
+		for fclient in self.factory.clients:
+		    if fclient.transport.getPeer().host == spl[1]:
+			fclient.transport.write(msg+"^")
+			return
+            
             
     #def connectionList(self):
 	

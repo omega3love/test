@@ -123,6 +123,7 @@ class bridgeConnection(userInterfaceWindow):
 
 	print "waiting an event..."
 	
+	self.lobby(self.clients)
 	self.askToPlay()
 
     def makeConnection(self):
@@ -215,8 +216,8 @@ class bridgeConnection(userInterfaceWindow):
 		self.dataGrave.append(data)
 		self.lobby(self.clients)
 	    elif "info:askPlay" in data:
-		self.opponent = data.split(":")[-1].split[";"][0]
-		answer = inputbox.ask(self.screen, "'%s' has asked you to play. Accept?(y/n) ")
+		self.opponent = data.split(":")[-1].split(";")[0]
+		answer = inputbox.ask(self.screen, "'%s' has asked you to play. Accept?(y/n) " %self.opponent)
 		if answer in ["Y", "Yes", "y", "yes"]:
 		    self.sendData("info:gameAccept:%s;%s" %(self.userName, self.opponent))
 		else:
